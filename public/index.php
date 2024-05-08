@@ -6,6 +6,7 @@ use App\App;
 use App\Config;
 use App\Container;
 use App\Controllers\HomeController;
+use App\Controllers\UserController;
 use App\Router;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -20,8 +21,12 @@ $container = new Container();
 $router = new Router($container);
 
 $router->registerRoutesFromControllerAttributes([
-    HomeController::class
+    HomeController::class,
+    UserController::class,
 ]);
+
+//var_dump($router);
+//die();
 
 (new App(
     $container,
