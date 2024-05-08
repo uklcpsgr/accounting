@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\EmailStatus;
 use App\Model;
-use PDO;
 use Symfony\Component\Mime\Address;
 
 class Email extends Model
@@ -26,7 +25,12 @@ class Email extends Model
         $meta['to']   = $to->toString();
         $meta['from'] = $from->toString();
 
-        $stmt->execute([$subject, EmailStatus::Queue->value, $html, $text, json_encode($meta)]);
+        $stmt->bindValue(1, $subject);
+        $stmt->bindValue(2, EmailStatus::Queue->value);
+        $stmt->bindValue(3, $html);
+        $stmt->bindValue(4, $text);
+        $stmt->bindValue(5, json_encode($meta));
+        $stmt->executeQuery();
     }
 
     public function getEmailsByStatus(EmailStatus $status): array
@@ -36,10 +40,9 @@ class Email extends Model
              FROM emails
              WHERE status = ?'
         );
+        $stmt->bindValue(1, $status->value);
 
-        $stmt->execute([$status->value]);
-
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $stmt->executeQuery()->fetchAllAssociative();
     }
 
     public function markEmailSent(int $id): void
@@ -49,7 +52,9 @@ class Email extends Model
              SET status = ?, sent_at = NOW()
              WHERE id = ?'
         );
+        $stmt->bindValue(1, EmailStatus::Sent->value);
+        $stmt->bindValue(2, $id);
 
-        $stmt->execute([EmailStatus::Sent->value, $id]);
+        $stmt->executeStatement();
     }
 }
