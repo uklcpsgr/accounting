@@ -36,7 +36,7 @@ class Invoice
     #[OneToMany(targetEntity: InvoiceItem::class, mappedBy: 'invoice')]
     private Collection $items;
 
-    public function __constuctor()
+    public function __construct()
     {
         $this->items = new ArrayCollection();
     }
